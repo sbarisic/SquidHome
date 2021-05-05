@@ -7,7 +7,7 @@ using Nancy.Hosting.Self;
 using SqdHome.Models;
 
 namespace SqdHome {
-	class Program {
+	public static class Program {
 		static void Main(string[] args) {
 			SmartHome.Init();
 
@@ -28,7 +28,7 @@ namespace SqdHome {
 				return new Devices();
 			});
 
-			Post("/devices", args => {
+			/*Post("/devices", args => {
 				if (Request.Form.Action == null)
 					return Response.AsRedirect("~/devices");
 
@@ -52,7 +52,7 @@ namespace SqdHome {
 				}
 
 				return Response.AsRedirect("~/devices");
-			});
+			});*/
 		}
 	}
 }

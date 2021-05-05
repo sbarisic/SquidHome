@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 namespace SquidHome {
 	public class CustomBootstrapper : DefaultNancyBootstrapper {
 		protected override void ConfigureConventions(NancyConventions nancyConventions) {
+			nancyConventions.StaticContentsConventions.Add(StaticContentConventionBuilder.AddDirectory("/", "Content"));
+
 			base.ConfigureConventions(nancyConventions);
 
 			//nancyConventions.StaticContentsConventions.Add(StaticContentConventionBuilder.AddDirectory("/", "main"));

@@ -12,6 +12,8 @@
 	<script type="text/javascript" src="http://cdn.ink.sapo.pt/3.1.10/js/ink-all.min.js"></script>
 	<script type="text/javascript" src="http://cdn.ink.sapo.pt/3.1.10/js/autoload.js"></script>
 
+	<script type="text/javascript" src="site.js"></script>
+
 	<!-- http://ink.sapo.pt/ui-elements/buttons/ -->
 </head>
 <body>
@@ -33,7 +35,7 @@
 
 						<tbody>
 							@Each.SmartDevices
-							<tr>
+							<tr id="sd-@Current.ID">
 								<td>
 									@Current.ID
 								</td>
@@ -42,14 +44,15 @@
 									@Current.Name
 								</td>
 
-								<td>
+								<td class="id-value">
 									@Current.Value
 								</td>
 
 								<td>
 									@If.CanToggle
-									<button class="ink-button" name="Action" value="ToggleOn/@Current.ID">On</button>
-									<button class="ink-button" name="Action" value="ToggleOff/@Current.ID">Off</button>
+									<!--<button class="ink-button" name="Action" value="ToggleOn/@Current.ID" onclick="return ws_trigger_button('@Current.ID');">On</button>-->
+									<button class="ink-button" onclick="return ws_send_event('Toggle', { ID: '@Current.ID', Value: true });">On</button>
+									<button class="ink-button" onclick="return ws_send_event('Toggle', { ID: '@Current.ID', Value: false });">Off</button>
 									@EndIf
 								</td>
 							</tr>
