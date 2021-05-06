@@ -2,6 +2,10 @@
 	return document.getElementById(id).getElementsByClassName(classname)[0];
 }
 
+function ws_refresh_page() {
+	location.reload();
+}
+
 function ws_set_inner(id, classname, inner) {
 	var element = getByClassInsideID(id, classname);
 
@@ -26,8 +30,11 @@ squid_ws.onopen = function (e) {
 
 squid_ws.onmessage = function (e) {
 	var data = JSON.parse(e.data);
+	console.log(data);
 
-	if (data.EventName = "ws_set_inner") {
+	if (data.EventName == "ws_set_inner") {
 		ws_set_inner(data.ID, data.ClassName, data.Inner);
+	} else if (data.EventName == "ws_refresh_page") {
+		ws_refresh_page();
 	}
 }

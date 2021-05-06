@@ -13,16 +13,8 @@ namespace SqdHome {
 		static List<HomeDevice> Devices = new List<HomeDevice>();
 
 		public static void Init() {
-			// TODO: Initialize devices here
-			for (int i = 0; i < 4; i++) {
-				HomeDeviceRelay LightDevice = new HomeDeviceRelay(Guid.NewGuid().ToString(), "Light " + i.ToString());
-				LightDevice.Toggle(false);
-
-				Devices.Add(LightDevice);
-			}
-
-			Devices.Add(new HomeDeviceThermostat());
-			Devices.Add(new HomeDeviceDoor());
+			//Discovery.Init();
+			MQTT.Init();
 
 			StartWebSocketServer();
 
@@ -45,6 +37,18 @@ namespace SqdHome {
 			WSS.Start();
 		}
 
+		public static void RegisterDevice(HomeDevice Device) {
+			Devices.Add(Device);
+
+			if (WSS.IsListening) {
+				WSS.WebSocketServices["/ws"].Sessions.Broadcast(
+						JSON.Serialize(new {
+							EventName = "ws_refresh_page"
+						})
+					);
+			}
+		}
+
 		public static List<HomeDevice> GetDevices() {
 			return Devices;
 		}
@@ -56,6 +60,30 @@ namespace SqdHome {
 			}
 
 			return null;
+		}
+
+		public static HomeDevice GetOrCreateDevice(string ID) {
+			string[] ModelID = ID.Split(new[] { '-' });
+			HomeDevice Device = GetDevice(ID);
+
+			if (Device == null) {
+				switch (ModelID[0]) {
+					case "shelly1":
+						Device = new HomeDeviceRelay(ID, ID);
+						break;
+
+					case "shellydw":
+						Device = new HomeDeviceDoor(ID, ID);
+						break;
+
+					default:
+						throw new NotImplementedException();
+				}
+
+				RegisterDevice(Device);
+			}
+
+			return Device;
 		}
 
 		public static void BroadcastChange(HomeDevice Dev) {
@@ -112,62 +140,6 @@ namespace SqdHome {
 
 		public ArgsType Args {
 			get; set;
-		}
-	}
-
-	public class HomeDevice {
-		public string ID {
-			get;
-		}
-
-		public string Name {
-			get;
-		}
-
-		public virtual object Value {
-			get;
-		}
-
-		public bool CanToggle {
-			get;
-		}
-
-		public HomeDevice(string ID, string Name, bool CanToggle) {
-			this.ID = ID;
-			this.Name = Name;
-			this.CanToggle = CanToggle;
-		}
-
-		public virtual void Toggle(bool On) {
-		}
-	}
-
-	public class HomeDeviceRelay : HomeDevice {
-		public bool RelayValue {
-			get; private set;
-		}
-
-		public override object Value => RelayValue;
-
-		public HomeDeviceRelay(string ID, string Name) : base(ID, Name, true) {
-		}
-
-		public override void Toggle(bool On) {
-			RelayValue = On;
-		}
-	}
-
-	public class HomeDeviceThermostat : HomeDevice {
-		public override object Value => "23 °C";
-
-		public HomeDeviceThermostat() : base(Guid.NewGuid().ToString(), "Thermostat", false) {
-		}
-	}
-
-	public class HomeDeviceDoor : HomeDevice {
-		public override object Value => false;
-
-		public HomeDeviceDoor() : base(Guid.NewGuid().ToString(), "Door", false) {
 		}
 	}
 }
