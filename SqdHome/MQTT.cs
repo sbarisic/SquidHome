@@ -47,7 +47,7 @@ namespace SqdHome {
 			Console.WriteLine("MQTT Connected");
 			Subscribe("#");
 
-			Thread TestThread = new Thread(() => {
+			/*Thread TestThread = new Thread(() => {
 				Thread.Sleep(5000);
 				Publish("shellies/shellydw-123/sensor/state", "closed", MqttQualityOfServiceLevel.AtLeastOnce);
 
@@ -56,7 +56,7 @@ namespace SqdHome {
 			});
 
 			TestThread.IsBackground = true;
-			TestThread.Start();
+			TestThread.Start();*/
 		}
 
 		static void OnMessageReceived(MqttApplicationMessageReceivedEventArgs E) {
@@ -77,10 +77,11 @@ namespace SqdHome {
 			if (ID == "announce")
 				return;
 
-			if (Topic.Count(C => C == '/') > 2)
+			if (Topic.Count(C => C == '/') >= 2)
 				SubTopic = Topic.Substring(Topic.IndexOf('/', Topic.IndexOf('/') + 1) + 1);
 
-			SmartHome.GetOrCreateDevice(ID);
+			HomeDevice Dev = SmartHome.GetOrCreateDevice(ID);
+			Dev.ReceiveUpdateProperty(SubTopic, Payload);
 		}
 	}
 }

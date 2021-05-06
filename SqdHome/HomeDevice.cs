@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace SqdHome {
 	public class HomeDevice {
@@ -41,6 +42,25 @@ namespace SqdHome {
 
 		public void ReceiveUpdateProperty(string Name, string Value) {
 			LastUpdate = DateTime.Now;
+
+			// TODO: Optimize
+			PropertyInfo Prop = GetType().GetProperties().Where((P) => {
+				DevicePropertyAttribute Att = P.GetCustomAttribute<DevicePropertyAttribute>();
+
+				if (Att != null && Att.Name == Name)
+					return true;
+
+				return false;
+			}).FirstOrDefault();
+
+			if (Prop != null) {
+				DevicePropertyAttribute Attr = Prop.GetCustomAttribute<DevicePropertyAttribute>();
+				if (Attr != null) {
+					Prop.SetValue(this, Value);
+
+					SmartHome.BroadcastChange(this);
+				}
+			}
 		}
 	}
 
@@ -61,7 +81,7 @@ namespace SqdHome {
 		}
 
 		public override void Toggle(bool On) {
-			MQTT.Publish(string.Format("shellies/{0}/relay/command", ID), On ? "on" : "off");
+			MQTT.Publish(string.Format("shellies/{0}/relay/0/command", ID), On ? "on" : "off");
 		}
 	}
 
