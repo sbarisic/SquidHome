@@ -47,16 +47,18 @@ namespace SqdHome {
 			Console.WriteLine("MQTT Connected");
 			Subscribe("#");
 
-			/*Thread TestThread = new Thread(() => {
-				Thread.Sleep(5000);
-				Publish("shellies/shellydw-123/sensor/state", "closed", MqttQualityOfServiceLevel.AtLeastOnce);
+			if (Program.TEST) {
+				Thread TestThread = new Thread(() => {
+					Thread.Sleep(1000);
+					Publish("shellies/shellydw-123/sensor/state", "closed", MqttQualityOfServiceLevel.AtLeastOnce);
 
-				Thread.Sleep(5000);
-				Publish("shellies/shelly1-234/relay/0", "off", MqttQualityOfServiceLevel.AtLeastOnce);
-			});
+					Thread.Sleep(1000);
+					Publish("shellies/shelly1-234/relay/0", "off", MqttQualityOfServiceLevel.AtLeastOnce);
+				});
 
-			TestThread.IsBackground = true;
-			TestThread.Start();*/
+				TestThread.IsBackground = true;
+				TestThread.Start();
+			}
 		}
 
 		static void OnMessageReceived(MqttApplicationMessageReceivedEventArgs E) {

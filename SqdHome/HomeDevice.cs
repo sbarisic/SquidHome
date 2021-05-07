@@ -7,6 +7,8 @@ using System.Reflection;
 
 namespace SqdHome {
 	public class HomeDevice {
+		DevProperty[] Properties;
+
 		public DateTime LastUpdate {
 			get; private set;
 		}
@@ -31,6 +33,8 @@ namespace SqdHome {
 			this.ID = ID;
 			this.Name = Name;
 			this.CanToggle = CanToggle;
+
+			Properties = DevProperty.GetAllDeviceProperties(this);
 		}
 
 		public virtual void Toggle(bool On) {
@@ -43,21 +47,9 @@ namespace SqdHome {
 		public void ReceiveUpdateProperty(string Name, string Value) {
 			LastUpdate = DateTime.Now;
 
-			// TODO: Optimize
-			PropertyInfo Prop = GetType().GetProperties().Where((P) => {
-				DevicePropertyAttribute Att = P.GetCustomAttribute<DevicePropertyAttribute>();
-
-				if (Att != null && Att.Name == Name)
-					return true;
-
-				return false;
-			}).FirstOrDefault();
-
-			if (Prop != null) {
-				DevicePropertyAttribute Attr = Prop.GetCustomAttribute<DevicePropertyAttribute>();
-				if (Attr != null) {
-					Prop.SetValue(this, Value);
-
+			for (int i = 0; i < Properties.Length; i++) {
+				if (Properties[i].PropertyName == Name) {
+					Properties[i].Set(Value);
 					SmartHome.BroadcastChange(this);
 				}
 			}
@@ -82,6 +74,10 @@ namespace SqdHome {
 
 		public override void Toggle(bool On) {
 			MQTT.Publish(string.Format("shellies/{0}/relay/0/command", ID), On ? "on" : "off");
+
+			if (Program.TEST) {
+				RelayValue = On ? "on" : "off";
+			}
 		}
 	}
 

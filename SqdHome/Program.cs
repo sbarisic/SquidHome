@@ -8,6 +8,8 @@ using SqdHome.Models;
 
 namespace SqdHome {
 	public static class Program {
+		public static bool TEST = true;
+
 		static void Main(string[] args) {
 			SmartHome.Init();
 
