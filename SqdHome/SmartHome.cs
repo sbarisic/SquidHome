@@ -10,7 +10,11 @@ using System.Threading;
 namespace SqdHome {
 	static class SmartHome {
 		static WebSocketServer WSS;
+
 		static List<HomeDevice> Devices = new List<HomeDevice>();
+		static List<HomeDevice> RemoveList = new List<HomeDevice>();
+
+		static object Lock = new object();
 
 		public static void Init() {
 			//Discovery.Init();
@@ -21,6 +25,31 @@ namespace SqdHome {
 			Thread UpdateThread = new Thread(Update);
 			UpdateThread.IsBackground = true;
 			UpdateThread.Start();
+
+			Thread LocalUpdateThread = new Thread(LocalUpdate);
+			LocalUpdateThread.IsBackground = true;
+			LocalUpdateThread.Start();
+		}
+
+		static void LocalUpdate() {
+			while (true) {
+				lock (Lock) {
+					RemoveList.Clear();
+
+					foreach (HomeDevice Dev in Devices) {
+						Dev.LocalUpdate(out bool ShouldRemove);
+
+						if (ShouldRemove)
+							RemoveList.Add(Dev);
+					}
+
+					foreach (HomeDevice RemoveDev in RemoveList) {
+						Devices.Remove(RemoveDev);
+					}
+				}
+
+				Thread.Sleep(1000);
+			}
 		}
 
 		static void Update() {
@@ -76,6 +105,10 @@ namespace SqdHome {
 						Device = new HomeDeviceDoor(ID, ID);
 						break;
 
+					case "shellyswitch25":
+						Device = new HomeDeviceRelay2(ID, ID);
+						break;
+
 					default:
 						throw new NotImplementedException();
 				}
@@ -86,7 +119,7 @@ namespace SqdHome {
 			return Device;
 		}
 
-		public static void BroadcastChange(HomeDevice Dev) {
+		public static void BroadcastChange(HomeDevice Dev, string Name) {
 			WSS.WebSocketServices["/ws"].Sessions.Broadcast(
 				JSON.Serialize(new {
 					EventName = "ws_set_inner",
@@ -115,7 +148,7 @@ namespace SqdHome {
 				HomeDevice Dev = SmartHome.GetDevice(ToggleMsg.Args.ID);
 				Dev.Toggle(ToggleMsg.Args.Value);
 
-				SmartHome.BroadcastChange(Dev);
+				//SmartHome.BroadcastChange(Dev, "");
 			} else
 				throw new NotImplementedException();
 		}

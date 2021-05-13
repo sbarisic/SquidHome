@@ -30,6 +30,10 @@ namespace SqdHome {
 				return new Devices();
 			});
 
+			Get("/editor", args => {
+				return new Editor();
+			});
+
 			/*Post("/devices", args => {
 				if (Request.Form.Action == null)
 					return Response.AsRedirect("~/devices");

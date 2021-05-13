@@ -25,8 +25,18 @@ namespace SqdHome {
 			get; private set;
 		}
 
-		public void Set(string StrValue) {
-			Prop.SetValue(Owner, Utils.ParseType(Prop.PropertyType, StrValue));
+		public Type PropertyType {
+			get {
+				return Prop.PropertyType;
+			}
+		}
+
+		public void Set(object Value) {
+			Prop.SetValue(Owner, Value);
+		}
+
+		public object Get() {
+			return Prop.GetValue(Owner);
 		}
 
 		public static DevProperty[] GetAllDeviceProperties(HomeDevice Dev) {
@@ -40,6 +50,8 @@ namespace SqdHome {
 					Prop = Prop,
 					PropertyName = Prop.GetCustomAttribute<DevicePropertyAttribute>().Name
 				};
+
+				DevProps.Add(DevProp);
 			}
 
 			return DevProps.ToArray();

@@ -44,13 +44,27 @@ namespace SqdHome {
 			MQTT.Publish(string.Format("shellies/{0}/command", ID), "update");
 		}
 
-		public void ReceiveUpdateProperty(string Name, string Value) {
+		public void LocalUpdate(out bool ShouldRemove) {
+			ShouldRemove = false;
+
+			if ((DateTime.Now - LastUpdate).TotalSeconds > 120) {
+				ShouldRemove = true;
+				return;
+			}
+		}
+
+		public void ReceiveUpdateProperty(string Name, string StrValue) {
 			LastUpdate = DateTime.Now;
 
 			for (int i = 0; i < Properties.Length; i++) {
 				if (Properties[i].PropertyName == Name) {
-					Properties[i].Set(Value);
-					SmartHome.BroadcastChange(this);
+					object Value = Utils.ParseType(Properties[i].PropertyType, StrValue);
+
+					if (Properties[i].Get() != Value) {
+						Properties[i].Set(Value);
+
+						SmartHome.BroadcastChange(this, Name);
+					}
 				}
 			}
 		}
@@ -78,6 +92,59 @@ namespace SqdHome {
 			if (Program.TEST) {
 				RelayValue = On ? "on" : "off";
 			}
+		}
+	}
+
+	public class HomeDeviceRelay2 : HomeDevice {
+		public override object Value {
+			get {
+				return string.Format("{0}, {1}", RelayInput0, RelayInput1);
+			}
+		}
+
+		[DeviceProperty(Name = "input/0")]
+		public string RelayInput0 {
+			get; set;
+		}
+
+		[DeviceProperty(Name = "input/1")]
+		public string RelayInput1 {
+			get; set;
+		}
+
+		[DeviceProperty(Name = "roller/0/pos")]
+		public int RollerPosition {
+			get; set;
+		}
+
+		public HomeDeviceRelay2(string ID, string Name) : base(ID, Name, false) {
+		}
+
+		public void Calibrate() {
+			MQTT.Publish(string.Format("shellies/{0}/roller/0/command", ID), "rc");
+		}
+
+		public void Open() {
+			MQTT.Publish(string.Format("shellies/{0}/roller/0/command", ID), "open");
+		}
+
+		public void Close() {
+			MQTT.Publish(string.Format("shellies/{0}/roller/0/command", ID), "close");
+		}
+
+		public void Stop() {
+			MQTT.Publish(string.Format("shellies/{0}/roller/0/command", ID), "stop");
+
+		}
+
+		public void SetRollerPosition(int Pos) {
+			if (Pos < 0)
+				Pos = 0;
+
+			if (Pos > 100)
+				Pos = 100;
+
+			MQTT.Publish(string.Format("shellies/{0}/roller/0/command/pos", ID), Pos.ToString());
 		}
 	}
 
