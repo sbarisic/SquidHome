@@ -136,19 +136,41 @@ namespace SqdHome {
 			JSONMsgBase Msg = JSON.Deserialize<JSONMsgBase>(e.Data);
 
 			switch (Msg.EventName) {
-				case "Toggle":
-					Msg = JSON.Deserialize<JSONMsgToggle>(e.Data);
+				case "Command":
+					Msg = JSON.Deserialize<JSONMsgCommand>(e.Data);
 					break;
 
 				default:
 					throw new NotImplementedException();
 			}
 
-			if (Msg is JSONMsgToggle ToggleMsg) {
-				HomeDevice Dev = SmartHome.GetDevice(ToggleMsg.Args.ID);
-				Dev.Toggle(ToggleMsg.Args.Value);
+			if (Msg is JSONMsgCommand Command) {
+				HomeDevice Dev = SmartHome.GetDevice(Command.Args.ID);
 
-				//SmartHome.BroadcastChange(Dev, "");
+				switch (Command.Args.Value) {
+					case "ToggleOn":
+						Dev.Toggle(true);
+						break;
+
+					case "ToggleOff":
+						Dev.Toggle(false);
+						break;
+
+					case "Open":
+						((HomeDeviceRelay2)Dev).Open();
+						break;
+
+					case "Stop":
+						((HomeDeviceRelay2)Dev).Stop();
+						break;
+
+					case "Close":
+						((HomeDeviceRelay2)Dev).Close();
+						break;
+
+					default:
+						throw new NotImplementedException();
+				}
 			} else
 				throw new NotImplementedException();
 		}
@@ -160,13 +182,13 @@ namespace SqdHome {
 		}
 	}
 
-	public class JSONMsgToggle : JSONMsgBase {
+	public class JSONMsgCommand : JSONMsgBase {
 		public class ArgsType {
 			public string ID {
 				get; set;
 			}
 
-			public bool Value {
+			public string Value {
 				get; set;
 			}
 		}

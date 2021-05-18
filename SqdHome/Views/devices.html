@@ -58,8 +58,14 @@
 								<td>
 									@If.CanToggle
 									<!--<button class="ink-button" name="Action" value="ToggleOn/@Current.ID" onclick="return ws_trigger_button('@Current.ID');">On</button>-->
-									<button class="ink-button" onclick="return ws_send_event('Toggle', { ID: '@Current.ID', Value: true });">On</button>
-									<button class="ink-button" onclick="return ws_send_event('Toggle', { ID: '@Current.ID', Value: false });">Off</button>
+									<button class="ink-button" onclick="return ws_send_event('Command', { ID: '@Current.ID', Value: 'ToggleOn' });">On</button>
+									<button class="ink-button" onclick="return ws_send_event('Command', { ID: '@Current.ID', Value: 'ToggleOff' });">Off</button>
+									@EndIf
+
+									@If.IsRoller
+									<button class="ink-button" onclick="return ws_send_event('Command', { ID: '@Current.ID', Value: 'Close' });">Close</button>
+									<button class="ink-button" onclick="return ws_send_event('Command', { ID: '@Current.ID', Value: 'Stop' });">Stop</button>
+									<button class="ink-button" onclick="return ws_send_event('Command', { ID: '@Current.ID', Value: 'Open' });">Open</button>
 									@EndIf
 								</td>
 							</tr>

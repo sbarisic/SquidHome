@@ -29,10 +29,15 @@ namespace SqdHome {
 			get;
 		}
 
-		public HomeDevice(string ID, string Name, bool CanToggle) {
+		public bool IsRoller {
+			get;
+		}
+
+		public HomeDevice(string ID, string Name, bool CanToggle, bool IsRoller) {
 			this.ID = ID;
 			this.Name = Name;
 			this.CanToggle = CanToggle;
+			this.IsRoller = IsRoller;
 
 			Properties = DevProperty.GetAllDeviceProperties(this);
 		}
@@ -83,7 +88,7 @@ namespace SqdHome {
 			get; set;
 		}
 
-		public HomeDeviceRelay(string ID, string Name) : base(ID, Name, true) {
+		public HomeDeviceRelay(string ID, string Name) : base(ID, Name, true, false) {
 		}
 
 		public override void Toggle(bool On) {
@@ -98,6 +103,10 @@ namespace SqdHome {
 	public class HomeDeviceRelay2 : HomeDevice {
 		public override object Value {
 			get {
+				if (IsRoller) {
+					return string.Format("{0} - {1} %", RollerState, RollerPosition);
+				}
+
 				return string.Format("{0}, {1}", RelayInput0, RelayInput1);
 			}
 		}
@@ -117,7 +126,12 @@ namespace SqdHome {
 			get; set;
 		}
 
-		public HomeDeviceRelay2(string ID, string Name) : base(ID, Name, false) {
+		[DeviceProperty(Name = "roller/0")]
+		public string RollerState {
+			get; set;
+		}
+
+		public HomeDeviceRelay2(string ID, string Name) : base(ID, Name, false, true) {
 		}
 
 		public void Calibrate() {
@@ -181,7 +195,7 @@ namespace SqdHome {
 			get; set;
 		}
 
-		public HomeDeviceDoor(string ID, string Name) : base(ID, Name, false) {
+		public HomeDeviceDoor(string ID, string Name) : base(ID, Name, false, false) {
 		}
 	}
 }
