@@ -9,6 +9,10 @@ namespace SqdHome {
 	public class HomeDevice {
 		DevProperty[] Properties;
 
+		public bool ShouldSendUpdateRequest {
+			get; set;
+		}
+
 		public DateTime LastUpdate {
 			get; private set;
 		}
@@ -26,20 +30,22 @@ namespace SqdHome {
 		}
 
 		public bool CanToggle {
-			get;
+			get; protected set;
 		}
 
 		public bool IsRoller {
-			get;
+			get; protected set;
 		}
 
-		public HomeDevice(string ID, string Name, bool CanToggle, bool IsRoller) {
+		public HomeDevice(string ID, string Name) {
 			this.ID = ID;
 			this.Name = Name;
-			this.CanToggle = CanToggle;
-			this.IsRoller = IsRoller;
+
+			CanToggle = false;
+			IsRoller = false;
 
 			Properties = DevProperty.GetAllDeviceProperties(this);
+			ShouldSendUpdateRequest = true;
 		}
 
 		public virtual void Toggle(bool On) {
@@ -58,7 +64,7 @@ namespace SqdHome {
 			}
 		}
 
-		public void ReceiveUpdateProperty(string Name, string StrValue) {
+		public virtual void ReceiveUpdateProperty(string Name, string StrValue) {
 			LastUpdate = DateTime.Now;
 
 			for (int i = 0; i < Properties.Length; i++) {
@@ -88,7 +94,8 @@ namespace SqdHome {
 			get; set;
 		}
 
-		public HomeDeviceRelay(string ID, string Name) : base(ID, Name, true, false) {
+		public HomeDeviceRelay(string ID, string Name) : base(ID, Name) {
+			CanToggle = true;
 		}
 
 		public override void Toggle(bool On) {
@@ -131,7 +138,7 @@ namespace SqdHome {
 			get; set;
 		}
 
-		public HomeDeviceRelay2(string ID, string Name) : base(ID, Name, false, true) {
+		public HomeDeviceRelay2(string ID, string Name) : base(ID, Name) {
 		}
 
 		public void Calibrate() {
@@ -159,6 +166,15 @@ namespace SqdHome {
 				Pos = 100;
 
 			MQTT.Publish(string.Format("shellies/{0}/roller/0/command/pos", ID), Pos.ToString());
+		}
+
+		public override void ReceiveUpdateProperty(string Name, string StrValue) {
+			base.ReceiveUpdateProperty(Name, StrValue);
+
+			if (Name.Contains("roller")) {
+				IsRoller = true;
+				CanToggle = false;
+			}
 		}
 	}
 
@@ -195,7 +211,7 @@ namespace SqdHome {
 			get; set;
 		}
 
-		public HomeDeviceDoor(string ID, string Name) : base(ID, Name, false, false) {
+		public HomeDeviceDoor(string ID, string Name) : base(ID, Name) {
 		}
 	}
 }

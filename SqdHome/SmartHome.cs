@@ -54,6 +54,13 @@ namespace SqdHome {
 
 		static void Update() {
 			while (true) {
+				foreach (var D in Devices) {
+					if (D.ShouldSendUpdateRequest) {
+						D.ShouldSendUpdateRequest = false;
+						D.ForceUpdate();
+					}
+				}
+
 				// TODO
 
 				Thread.Sleep(500);
