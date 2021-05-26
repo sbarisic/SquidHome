@@ -51,7 +51,7 @@ namespace SqdHome {
 			if (!Program.TEST)
 				return;
 
-			/*SpawnThread(() => {
+			SpawnThread(() => {
 				Thread.Sleep(5000);
 				SendMQTT_Shelly1("1234", true);
 
@@ -65,7 +65,7 @@ namespace SqdHome {
 
 				Thread.Sleep(4000);
 				SendMQTT_ShellyDW("4512", false);
-			});*/
+			});
 
 			SpawnThread(() => {
 				Thread.Sleep(3500);
