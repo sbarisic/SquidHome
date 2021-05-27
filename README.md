@@ -1,3 +1,0 @@
-# SquidHome
-
-Binaries branch
