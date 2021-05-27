@@ -1,5 +1,3 @@
 # SquidHome
 
-Test
-
-test
+Binaries branch
