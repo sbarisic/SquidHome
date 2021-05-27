@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+
+	<title>SquidHome</title>
+
+	<!--<link rel="stylesheet" type="text/css" href="http://cdn.ink.sapo.pt/3.1.10/css/ink-flex.min.css">
+	<link rel="stylesheet" type="text/css" href="http://cdn.ink.sapo.pt/3.1.10/css/font-awesome.min.css">-->
+
+	<link rel="stylesheet" type="text/css" href="css/ink-flex.min.css">
+	<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="css/litegraph.css">
+
+	<!--<script type="text/javascript" src="http://cdn.ink.sapo.pt/3.1.10/js/holder.js"></script>
+	<script type="text/javascript" src="http://cdn.ink.sapo.pt/3.1.10/js/ink-all.min.js"></script>
+	<script type="text/javascript" src="http://cdn.ink.sapo.pt/3.1.10/js/autoload.js"></script>-->
+
+	<script type="text/javascript" src="js/holder.js"></script>
+	<script type="text/javascript" src="js/ink-all.min.js"></script>
+	<script type="text/javascript" src="js/autoload.js"></script>
+	<script type="text/javascript" src="js/litegraph.js"></script>
+
+	<script type="text/javascript" src="js/editor.js"></script>
+
+	<!-- http://ink.sapo.pt/ui-elements/buttons/ -->
+</head>
+<body>
+	<canvas id='mycanvas' width='1024' height='720' style='border: 1px solid'></canvas>
+	<script>
+		var graph = new LGraph();
+
+		var canvas = new LGraphCanvas("#mycanvas", graph);
+
+		var node_const = LiteGraph.createNode("basic/const");
+		node_const.pos = [200, 200];
+		graph.add(node_const);
+		node_const.setValue(4.5);
+
+		var node_watch = LiteGraph.createNode("basic/watch");
+		node_watch.pos = [700, 200];
+		graph.add(node_watch);
+
+		node_const.connect(0, node_watch, 0);
+
+		graph.start()
+	</script>
+</body>
+</html>
