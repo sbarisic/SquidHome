@@ -5,18 +5,21 @@ using Nancy;
 using Nancy.Conventions;
 using Nancy.Hosting.Self;
 using SqdHome.Models;
+using System.Windows.Forms;
 
 namespace SqdHome {
 	public static class Program {
 		public static bool TEST = true;
 
+		[STAThread]
 		static void Main(string[] args) {
 			SmartHome.Init();
 
 			NancyHost Host = new NancyHost(new Uri("http://localhost:8080"));
 			Host.Start();
 
-			Console.ReadLine();
+			Application.EnableVisualStyles();
+			Application.Run(new MainForm());
 		}
 	}
 

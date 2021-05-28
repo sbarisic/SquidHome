@@ -70,6 +70,7 @@ namespace GitUpdateTest {
 
 			try {
 				CurrentRepo = new Repository(WorkingDir);
+				Console.WriteLine("Found repository");
 			} catch (RepositoryNotFoundException) {
 				if (string.IsNullOrEmpty(Branch))
 					throw new InvalidOperationException("Branch name not defined");
@@ -77,7 +78,10 @@ namespace GitUpdateTest {
 				if (!Directory.Exists(WorkingDir))
 					Directory.CreateDirectory(WorkingDir);
 
+				Console.WriteLine("Cloning repository");
 				Repository.Clone(RepoURL, WorkingDir, new CloneOptions() { BranchName = Branch });
+
+				Console.WriteLine("Opening");
 				CurrentRepo = new Repository(WorkingDir);
 
 				Update();
@@ -103,10 +107,13 @@ namespace GitUpdateTest {
 		}
 
 		public static void RemoveUntrackedFiles() {
+			Console.WriteLine("Removing untracked files");
 			CurrentRepo.RemoveUntrackedFiles();
 		}
 
 		static void UpdateGitConfig() {
+			Console.WriteLine("Updating cfg");
+
 			string NewGitUpdate = Path.Combine(WorkingDir, GitUpdateCfg);
 
 			if (File.Exists(NewGitUpdate)) {
@@ -127,7 +134,9 @@ namespace GitUpdateTest {
 				}
 			};
 
+			Console.WriteLine("Pulling");
 			Commands.Pull(CurrentRepo, Merger, Opts);
+
 			UpdateGitConfig();
 		}
 
@@ -143,7 +152,10 @@ namespace GitUpdateTest {
 		}
 
 		public static void Init() {
+			Console.WriteLine("Loading cfg");
 			LoadCfg();
+
+			Console.WriteLine("Init repo");
 			InitRepo();
 		}
 	}
