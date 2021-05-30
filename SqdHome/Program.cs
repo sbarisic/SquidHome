@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace SqdHome {
 	public static class Program {
-		public static bool TEST = true;
+		public static bool TEST = false;
 
 		[STAThread]
 		static void Main(string[] args) {

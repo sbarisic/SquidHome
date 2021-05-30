@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using LibGit2Sharp;
@@ -11,17 +12,41 @@ namespace GitUpdateTest {
 	class Program {
 		static void Main(string[] args) {
 			Console.Title = "GitUpdate";
-			GitUpdate.Init();
 
-			if (GitUpdate.CheckForUpdates()) {
-				GitUpdate.RemoveUntrackedFiles();
+			if (CheckForInternet("8.8.8.8", "8.8.4.4")) {
+				GitUpdate.Init();
 
-				Console.Write("Update found, pulling ... ");
-				GitUpdate.Update();
-				Console.WriteLine("OK");
+				if (GitUpdate.CheckForUpdates()) {
+					GitUpdate.RemoveUntrackedFiles();
+
+					Console.Write("Update found, pulling ... ");
+					GitUpdate.Update();
+					Console.WriteLine("OK");
+				}
+			} else {
+				Console.WriteLine("Internet not available");
 			}
 
 			GitUpdate.ExecuteRun();
+		}
+
+		static bool CheckForInternet(params string[] Address) {
+			foreach (string A in Address) {
+				if (PingAddress(A))
+					return true;
+			}
+
+			return false;
+		}
+
+		static bool PingAddress(string Address) {
+			Ping Ping = new Ping();
+			PingReply Reply = Ping.Send(Address, 1000);
+
+			if (Reply.Status == IPStatus.Success)
+				return true;
+
+			return false;
 		}
 	}
 
