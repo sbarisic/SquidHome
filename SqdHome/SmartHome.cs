@@ -108,7 +108,7 @@ namespace SqdHome {
 						Device = new HomeDeviceRelay(ID, ID);
 						break;
 
-					case "shellydw":
+					case "shellydw2":
 						Device = new HomeDeviceDoor(ID, ID);
 						break;
 
