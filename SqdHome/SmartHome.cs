@@ -98,6 +98,15 @@ namespace SqdHome {
 			return null;
 		}
 
+		public static HomeDevice GetDeviceByName(string Name) {
+			for (int i = 0; i < Devices.Count; i++) {
+				if (Devices[i].Name == Name)
+					return Devices[i];
+			}
+
+			return null;
+		}
+
 		public static HomeDevice GetOrCreateDevice(string ID) {
 			string[] ModelID = ID.Split(new[] { '-' });
 			HomeDevice Device = GetDevice(ID);
@@ -105,15 +114,15 @@ namespace SqdHome {
 			if (Device == null) {
 				switch (ModelID[0]) {
 					case "shelly1":
-						Device = new HomeDeviceRelay(ID, ID);
+						Device = new HomeDeviceRelay(ID, ActionsParser.GetDeviceName(ID));
 						break;
 
 					case "shellydw2":
-						Device = new HomeDeviceDoor(ID, ID);
+						Device = new HomeDeviceDoor(ID, ActionsParser.GetDeviceName(ID));
 						break;
 
 					case "shellyswitch25":
-						Device = new HomeDeviceRelay2(ID, ID);
+						Device = new HomeDeviceRelay2(ID, ActionsParser.GetDeviceName(ID));
 						break;
 
 					default:
@@ -135,6 +144,8 @@ namespace SqdHome {
 					Inner = Dev.Value.ToString()
 				})
 			);
+
+
 		}
 	}
 

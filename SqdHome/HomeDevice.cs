@@ -179,7 +179,14 @@ namespace SqdHome {
 	}
 
 	public class HomeDeviceDoor : HomeDevice {
-		public override object Value => false;
+		public override object Value {
+			get {
+				if (State == "open")
+					return true;
+
+				return false;
+			}
+		}
 
 		[DeviceProperty(Name = "sensor/state")]
 		public string State {

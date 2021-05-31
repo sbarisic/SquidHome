@@ -44,20 +44,24 @@ namespace SqdHome {
 		}
 
 		static void SendMQTT_ShellyDW(string ID, bool State) {
-			MQTT.Publish(string.Format("shellies/shellydw-{0}/sensor/state", ID), State ? "open" : "closed");
+			MQTT.Publish(string.Format("shellies/shellydw2-{0}/sensor/state", ID), State ? "open" : "closed");
 		}
 
 		public static void SimulateMQTT() {
 			if (!Program.TEST)
 				return;
 
-			SpawnThread(() => {
+			SendMQTT_Shelly1("1234", false);
+			SendMQTT_Shelly25("7865", false);
+			SendMQTT_ShellyDW("4512", false);
+
+			/*SpawnThread(() => {
 				Thread.Sleep(5000);
 				SendMQTT_Shelly1("1234", true);
 
 				Thread.Sleep(2000);
 				SendMQTT_Shelly1("1234", false);
-			});
+			});*/
 
 			SpawnThread(() => {
 				Thread.Sleep(4000);
@@ -67,13 +71,13 @@ namespace SqdHome {
 				SendMQTT_ShellyDW("4512", false);
 			});
 
-			SpawnThread(() => {
+			/*SpawnThread(() => {
 				Thread.Sleep(3500);
 				SendMQTT_Shelly25("7865", true);
 
 				Thread.Sleep(3500);
 				SendMQTT_Shelly25("7865", false);
-			});
+			});*/
 		}
 	}
 }

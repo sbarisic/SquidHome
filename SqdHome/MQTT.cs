@@ -74,6 +74,8 @@ namespace SqdHome {
 
 			if (Dev != null)
 				Dev.ReceiveUpdateProperty(SubTopic, Payload);
+
+			ActionsParser.TriggerEvent(Topic, Payload);
 		}
 	}
 }

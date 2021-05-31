@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionsParser.cs" />
     <Compile Include="Attributes.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Discovery.cs" />
@@ -84,6 +85,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="actions\DeviceNames.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\js\autoload.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
