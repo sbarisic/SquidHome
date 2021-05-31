@@ -40,11 +40,14 @@ namespace GitUpdateTest {
 		}
 
 		static bool PingAddress(string Address) {
-			Ping Ping = new Ping();
-			PingReply Reply = Ping.Send(Address, 1000);
+			try {
+				Ping Ping = new Ping();
+				PingReply Reply = Ping.Send(Address, 1000);
 
-			if (Reply.Status == IPStatus.Success)
-				return true;
+				if (Reply.Status == IPStatus.Success)
+					return true;
+			} catch (Exception) {
+			}
 
 			return false;
 		}
