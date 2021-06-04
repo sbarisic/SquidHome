@@ -66,6 +66,7 @@
     <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Logging.cs" />
     <Compile Include="Models\Editor.cs" />
     <Compile Include="Models\Devices.cs" />
     <Compile Include="MQTT.cs" />

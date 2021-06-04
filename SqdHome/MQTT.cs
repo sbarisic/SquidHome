@@ -53,6 +53,8 @@ namespace SqdHome {
 			string Topic = E.ApplicationMessage.Topic;
 			string Payload = E.ApplicationMessage.ConvertPayloadToString();
 
+			Logging.WriteLine("{0}\r\n{1}", Topic, Payload);
+
 			if (Topic.StartsWith("shellies/"))
 				ParseShelly(Topic, Payload);
 

@@ -18,6 +18,7 @@ namespace SqdHome {
 			//Test();
 			//return;
 
+			Logging.Init();
 			Tasks.Init();
 			SmartHome.Init();
 			ActionsParser.Init();
@@ -36,9 +37,15 @@ namespace SqdHome {
 		}
 
 		static void Test() {
-			SunPosition.Update();
+			Logging.Init();
 
-			SunPosition.IsSunsetToDusk(out int Perc);
+			Logging.WriteLine("Hello World! 1");
+			Thread.Sleep(1000);
+
+			Logging.WriteLine("Hello World! 2");
+			Thread.Sleep(256);
+
+			Logging.WriteLine("Hello World! 3");
 		}
 	}
 
