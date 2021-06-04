@@ -70,7 +70,7 @@ namespace SqdHome {
 			if (Topic.Count(C => C == '/') >= 2)
 				SubTopic = Topic.Substring(Topic.IndexOf('/', Topic.IndexOf('/') + 1) + 1);
 
-			HomeDevice Dev = SmartHome.GetOrCreateDevice(ID);
+			HomeDevice Dev = SmartHome.GetOrCreateDevice(ID, ID);
 
 			if (Dev != null)
 				Dev.ReceiveUpdateProperty(SubTopic, Payload);

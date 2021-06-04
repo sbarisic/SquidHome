@@ -13,8 +13,9 @@ namespace SqdHome {
 
 		[STAThread]
 		static void Main(string[] args) {
-			ActionsParser.Init();
 			SmartHome.Init();
+			ActionsParser.Init();
+			MQTT.Init();
 
 			NancyHost Host = new NancyHost(new Uri("http://localhost:8080"));
 			Host.Start();

@@ -169,6 +169,8 @@ namespace GitUpdateTest {
 		}
 
 		public static void ExecuteRun() {
+			UpdateGitConfig();
+
 			if (!IsValidConfig())
 				return;
 

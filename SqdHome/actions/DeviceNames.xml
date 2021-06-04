@@ -4,6 +4,8 @@
   <DeviceName ID="shelly1-1234">Door Light</DeviceName>
   <DeviceName ID ="shellydw2-4512">Door Sensor</DeviceName>
 
+  <DeviceName ID="shellyswitch25-7865" IsRoller="true">Roller 1</DeviceName>
+
   <Event MQTT="shellies/shellydw2-4512/sensor/state" Value="open">
 	<Toggle Name="Door Light" Value="On" />
 

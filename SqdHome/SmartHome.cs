@@ -17,9 +17,6 @@ namespace SqdHome {
 		static object Lock = new object();
 
 		public static void Init() {
-			//Discovery.Init();
-			MQTT.Init();
-
 			StartWebSocketServer();
 
 			Thread UpdateThread = new Thread(Update);
@@ -76,7 +73,7 @@ namespace SqdHome {
 		public static void RegisterDevice(HomeDevice Device) {
 			Devices.Add(Device);
 
-			if (WSS.IsListening) {
+			if (WSS != null && WSS.IsListening) {
 				WSS.WebSocketServices["/ws"].Sessions.Broadcast(
 						JSON.Serialize(new {
 							EventName = "ws_refresh_page"
@@ -107,22 +104,23 @@ namespace SqdHome {
 			return null;
 		}
 
-		public static HomeDevice GetOrCreateDevice(string ID) {
+		public static HomeDevice GetOrCreateDevice(string ID, string Name) {
 			string[] ModelID = ID.Split(new[] { '-' });
 			HomeDevice Device = GetDevice(ID);
 
 			if (Device == null) {
 				switch (ModelID[0]) {
 					case "shelly1":
-						Device = new HomeDeviceRelay(ID, ActionsParser.GetDeviceName(ID));
+						Device = new HomeDeviceRelay(ID, Name);
 						break;
 
 					case "shellydw2":
-						Device = new HomeDeviceDoor(ID, ActionsParser.GetDeviceName(ID));
+						Device = new HomeDeviceDoor(ID, Name);
 						break;
 
+					case "shelly25":
 					case "shellyswitch25":
-						Device = new HomeDeviceRelay2(ID, ActionsParser.GetDeviceName(ID));
+						Device = new HomeDeviceRelay2(ID, Name);
 						break;
 
 					default:

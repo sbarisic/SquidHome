@@ -142,23 +142,29 @@ namespace SqdHome {
 		}
 
 		public void Calibrate() {
+			IsRoller = true;
 			MQTT.Publish(string.Format("shellies/{0}/roller/0/command", ID), "rc");
 		}
 
 		public void Open() {
+			IsRoller = true;
 			MQTT.Publish(string.Format("shellies/{0}/roller/0/command", ID), "open");
 		}
 
 		public void Close() {
+			IsRoller = true;
 			MQTT.Publish(string.Format("shellies/{0}/roller/0/command", ID), "close");
 		}
 
 		public void Stop() {
+			IsRoller = true;
 			MQTT.Publish(string.Format("shellies/{0}/roller/0/command", ID), "stop");
 
 		}
 
 		public void SetRollerPosition(int Pos) {
+			IsRoller = true;
+
 			if (Pos < 0)
 				Pos = 0;
 

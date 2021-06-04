@@ -28,7 +28,7 @@ namespace SqdHome {
 	}
 
 	public static class ActionsParser {
-		static Dictionary<string, string> DeviceNames = new Dictionary<string, string>();
+		//static Dictionary<string, string> DeviceNames = new Dictionary<string, string>();
 		static List<ActionEvent> Events = new List<ActionEvent>();
 
 		public static void Init() {
@@ -52,11 +52,18 @@ namespace SqdHome {
 		static void ParseAction(XmlElement E) {
 			if (E.Name == "DeviceName") {
 				string DeviceID = E.GetAttribute("ID");
+				string IsRoller = E.GetAttribute("IsRoller");
 
-				if (DeviceNames.ContainsKey(DeviceID))
+				/*if (DeviceNames.ContainsKey(DeviceID))
 					DeviceNames.Remove(DeviceID);
 
-				DeviceNames.Add(DeviceID, E.InnerText.Trim());
+				DeviceNames.Add(DeviceID, E.InnerText.Trim());*/
+
+				HomeDevice Dev = SmartHome.GetOrCreateDevice(DeviceID, E.InnerText.Trim());
+
+				if (!string.IsNullOrEmpty(IsRoller) && IsRoller == "true" && Dev is HomeDeviceRelay2 Rel2) {
+					Rel2.Stop();
+				}
 			}
 
 			if (E.Name == "Event") {
@@ -88,12 +95,12 @@ namespace SqdHome {
 			}
 		}
 
-		public static string GetDeviceName(string DeviceID) {
+		/*public static string GetDeviceName(string DeviceID) {
 			if (DeviceNames.ContainsKey(DeviceID))
 				return DeviceNames[DeviceID];
 
 			return DeviceID;
-		}
+		}*/
 
 		public static void TriggerEvent(string MQTT, string Value) {
 			foreach (ActionEvent E in Events) {
