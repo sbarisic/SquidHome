@@ -14,57 +14,40 @@ namespace SqdHome {
 		static List<HomeDevice> Devices = new List<HomeDevice>();
 		static List<HomeDevice> RemoveList = new List<HomeDevice>();
 
-		static object Lock = new object();
-
 		public static void Init() {
 			StartWebSocketServer();
 
-			Thread UpdateThread = new Thread(Update);
-			UpdateThread.IsBackground = true;
-			UpdateThread.Start();
-
-			Thread LocalUpdateThread = new Thread(LocalUpdate);
-			LocalUpdateThread.IsBackground = true;
-			LocalUpdateThread.Start();
+			Tasks.Register("local_update", LocalUpdate).ScheduleRepeat(2);
+			Tasks.Register("global_update", GlobalUpdate).ScheduleRepeat(1);
 		}
 
-		static void LocalUpdate() {
-			while (true) {
-				lock (Lock) {
-					RemoveList.Clear();
+		static void LocalUpdate(Task This) {
+			RemoveList.Clear();
 
-					foreach (HomeDevice Dev in Devices) {
-						Dev.LocalUpdate(out bool ShouldRemove);
+			foreach (HomeDevice Dev in Devices) {
+				Dev.LocalUpdate(out bool ShouldRemove);
 
-						if (ShouldRemove)
-							RemoveList.Add(Dev);
-					}
+				if (ShouldRemove)
+					RemoveList.Add(Dev);
+			}
 
-					foreach (HomeDevice RemoveDev in RemoveList) {
-						Devices.Remove(RemoveDev);
-					}
-				}
-
-				Thread.Sleep(1000);
+			foreach (HomeDevice RemoveDev in RemoveList) {
+				Devices.Remove(RemoveDev);
 			}
 		}
 
-		static void Update() {
-			while (true) {
-				foreach (var D in Devices) {
-					if (D.ShouldSendUpdateRequest) {
-						D.ShouldSendUpdateRequest = false;
-						D.ForceUpdate();
-					}
+		static void GlobalUpdate(Task This) {
+			foreach (var D in Devices) {
+				if (D.ShouldSendUpdateRequest) {
+					D.ShouldSendUpdateRequest = false;
+					D.ForceUpdate();
 				}
-
-				// TODO
-
-				Thread.Sleep(500);
 			}
 		}
 
 		static void StartWebSocketServer() {
+			Console.WriteLine("Starting WSS");
+
 			WSS = new WebSocketServer(8081);
 			WSS.AddWebSocketService<SmartHomeWebsocket>("/ws");
 			WSS.Start();

@@ -6,11 +6,16 @@
 
   <DeviceName ID="shellyswitch25-7865" IsRoller="true">Roller 1</DeviceName>
 
-  <Event MQTT="shellies/shellydw2-4512/sensor/state" Value="open">
-	<Toggle Name="Door Light" Value="On" />
+  <SunShutter Name="Roller 1" Max="80" Invert="True" Interval="180" />
+  <SunShutter Name="Roller 2" Max="80" />
 
-	<WaitSeconds Value="10">
-	  <Toggle Name="Door Light" Value="Off" />
-	</WaitSeconds>
+  <Event MQTT="shellies/shellydw2-4512/sensor/state" Value="open">
+	<If Name="Door Light" Value="False">
+	  <Toggle Name="Door Light" Value="On" />
+
+	  <WaitSeconds Name="DoorLightOff" Value="1">
+		<Toggle Name="Door Light" Value="Off" />
+	  </WaitSeconds>
+	</If>
   </Event>
 </Actions>

@@ -28,5 +28,9 @@ namespace SqdHome {
 
 			throw new NotImplementedException();
 		}
+
+		public static float Lerp(float A, float B, float Amt) {
+			return A * (1 - Amt) + B * Amt;
+		}
 	}
 }

@@ -32,6 +32,8 @@ namespace SqdHome {
 		static List<ActionEvent> Events = new List<ActionEvent>();
 
 		public static void Init() {
+			Console.WriteLine("Initializing action parser");
+
 			string[] ActionsFiles = Directory.GetFiles("actions", "*.xml", SearchOption.AllDirectories);
 
 			foreach (string ActionFile in ActionsFiles) {
@@ -82,16 +84,66 @@ namespace SqdHome {
 			}
 
 			if (E.Name == "WaitSeconds") {
+				string Name = "WaitSeconds_" + E.GetAttribute("Name");
 				int Value = int.Parse(E.GetAttribute("Value"));
 				XmlNodeList Children = E.ChildNodes;
 
-				Thread WaitThread = new Thread(() => {
-					Thread.Sleep(Value * 1000);
-
+				Tasks.Register(Name, (This) => {
 					foreach (XmlElement Child in Children)
 						ParseAction(Child);
+				}).ScheduleAfter(Value);
+			}
+
+			if (E.Name == "If") {
+				HomeDevice Dev = SmartHome.GetDeviceByName(E.GetAttribute("Name"));
+				string Value = E.GetAttribute("Value");
+				string DevValue = "";
+
+				if (Dev != null && Dev.Value != null)
+					DevValue = Dev.Value.ToString();
+
+				if (DevValue == Value) {
+					XmlNodeList Children = E.ChildNodes;
+					foreach (XmlElement Child in Children)
+						ParseAction(Child);
+				}
+			}
+
+			if (E.Name == "SunShutter") {
+				string MaxPercentStr = E.GetAttribute("Max").Trim();
+
+				if (string.IsNullOrEmpty(MaxPercentStr))
+					MaxPercentStr = "100";
+
+				int MaxPercent = int.Parse(MaxPercentStr);
+				bool Invert = E.GetAttribute("Invert").Trim() == "True";
+
+				string IntervalStr = E.GetAttribute("Interval").Trim();
+				if (string.IsNullOrEmpty(IntervalStr))
+					IntervalStr = "120";
+
+				int Interval = int.Parse(IntervalStr);
+				string DevName = E.GetAttribute("Name");
+
+				Tasks.Register("SunShutter_" + DevName, (This) => {
+					This.ScheduleAfter(Interval);
+
+					HomeDevice Dev = SmartHome.GetDeviceByName(DevName);
+					if (Dev != null && Dev is HomeDeviceRelay2 Dev25) {
+						DateTime Now = DateTime.Now;
+						SunPosition.Update();
+
+						int Percent = 0;
+						if (SunPosition.IsSunsetToDusk(out Percent) || SunPosition.IsDawnToSunrise(out Percent)) {
+							Percent = (int)Utils.Lerp(0, MaxPercent, Percent / 100.0f);
+
+							if (Invert)
+								Percent = 100 - Percent;
+
+							Dev25.SetRollerPosition(Percent);
+						}
+					}
 				});
-				WaitThread.Start();
 			}
 		}
 

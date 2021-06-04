@@ -6,13 +6,19 @@ using Nancy.Conventions;
 using Nancy.Hosting.Self;
 using SqdHome.Models;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace SqdHome {
 	public static class Program {
+		public static bool DEBUG_NAMES = false;
 		public static bool TEST = false;
 
 		[STAThread]
 		static void Main(string[] args) {
+			//Test();
+			//return;
+
+			Tasks.Init();
 			SmartHome.Init();
 			ActionsParser.Init();
 			MQTT.Init();
@@ -20,8 +26,19 @@ namespace SqdHome {
 			NancyHost Host = new NancyHost(new Uri("http://localhost:8080"));
 			Host.Start();
 
-			Application.EnableVisualStyles();
-			Application.Run(new MainForm());
+			//Application.EnableVisualStyles();
+			//Application.Run(new MainForm());
+
+			while (true) {
+				Tasks.Tick();
+				Thread.Sleep(250);
+			}
+		}
+
+		static void Test() {
+			SunPosition.Update();
+
+			SunPosition.IsSunsetToDusk(out int Perc);
 		}
 	}
 

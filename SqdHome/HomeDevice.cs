@@ -49,6 +49,7 @@ namespace SqdHome {
 		}
 
 		public virtual void Toggle(bool On) {
+			//SmartHome.BroadcastChange(this, "Toggle");
 		}
 
 		public virtual void ForceUpdate() {
@@ -103,6 +104,7 @@ namespace SqdHome {
 
 			if (Program.TEST) {
 				RelayValue = On ? "on" : "off";
+				SmartHome.BroadcastChange(this, "relay/0");
 			}
 		}
 	}
@@ -149,16 +151,31 @@ namespace SqdHome {
 		public void Open() {
 			IsRoller = true;
 			MQTT.Publish(string.Format("shellies/{0}/roller/0/command", ID), "open");
+
+			if (Program.TEST) {
+				RollerState = "open";
+				SmartHome.BroadcastChange(this, "roller/0");
+			}
 		}
 
 		public void Close() {
 			IsRoller = true;
 			MQTT.Publish(string.Format("shellies/{0}/roller/0/command", ID), "close");
+
+			if (Program.TEST) {
+				RollerState = "close";
+				SmartHome.BroadcastChange(this, "roller/0");
+			}
 		}
 
 		public void Stop() {
 			IsRoller = true;
 			MQTT.Publish(string.Format("shellies/{0}/roller/0/command", ID), "stop");
+
+			if (Program.TEST) {
+				RollerState = "stop";
+				SmartHome.BroadcastChange(this, "roller/0");
+			}
 
 		}
 

@@ -32,13 +32,13 @@ namespace SqdHome {
 		}
 
 		static void Subscribe(string Topic) {
-			Task.Run(async () => {
+			System.Threading.Tasks.Task.Run(async () => {
 				await Client.SubscribeAsync(Topic);
 			});
 		}
 
 		public static void Publish(string Topic, string Payload, MqttQualityOfServiceLevel QoS = MqttQualityOfServiceLevel.ExactlyOnce, bool Retain = false) {
-			Task.Run(async () => {
+			System.Threading.Tasks.Task.Run(async () => {
 				await Client.PublishAsync(Topic, Payload, QoS, Retain);
 			});
 		}
